@@ -55,24 +55,16 @@ func ComputeCalibrationSum(input CalibrationInput) int {
 			}
 		}
 
-		if len(digitsOnTheLine) == 2 {
-			number, err := strconv.Atoi(string(digitsOnTheLine))
-			if err != nil {
-				panic(err)
-			}
-
-			sum += number
-		}
-
 		if len(digitsOnTheLine) == 1 {
 			digitsOnTheLine = append(digitsOnTheLine, digitsOnTheLine[0])
-			number, err := strconv.Atoi(string(digitsOnTheLine))
-			if err != nil {
-				panic(err)
-			}
-
-			sum += number
 		}
+
+		number, err := strconv.Atoi(string(digitsOnTheLine))
+		if err != nil {
+			panic(err)
+		}
+
+		sum += number
 	}
 
 	return sum
