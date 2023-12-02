@@ -2,10 +2,23 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
+
+func main() {
+	input := parseInput("input.txt")
+
+	gameSets := ConvertInput(input)
+
+	part1Sum := gameSets.ComputeIDSumOfPossibleGames()
+	fmt.Printf("Part 1: %d\n", part1Sum)
+
+	part2Sum := gameSets.ComputeSumOfPowerOfMinimalGameSets()
+	fmt.Printf("Part 2: %d\n", part2Sum)
+}
 
 /*
 	For example, the record of a few games might look like this:
@@ -95,13 +108,53 @@ func (gameSets GameSetsInput) ComputeIDSumOfPossibleGames() int {
 	return sum
 }
 
-func main() {
-	input := parseInput("input.txt")
+/*
+	As you continue your walk, the Elf poses a second question:
+	in each game you played, what is the fewest number of cubes of each color
+	that could have been in the bag to make the game possible?
+*/
 
-	gameSets := ConvertInput(input)
-	sum := gameSets.ComputeIDSumOfPossibleGames()
+type MinimumGameSet map[CubeColor]int
 
-	println(sum)
+func (gameSet GameSet) ComputeMinimumGameSet() MinimumGameSet {
+	minimumGameSet := MinimumGameSet{}
+
+	for _, sampleGame := range gameSet {
+		for color, count := range sampleGame {
+			if _, ok := minimumGameSet[color]; !ok {
+				minimumGameSet[color] = count
+			} else if count > minimumGameSet[color] {
+				minimumGameSet[color] = count
+			}
+		}
+	}
+
+	return minimumGameSet
+}
+
+/*
+	For each game, find the minimum set of cubes that must have been present.
+	What is the sum of the power of these sets?
+
+	The power of a set of cubes is equal to the numbers of red, green, and blue
+	cubes multiplied together.
+*/
+
+func (gameSets GameSetsInput) ComputeSumOfPowerOfMinimalGameSets() int {
+	sum := 0
+
+	for _, gameSet := range gameSets {
+		minimumGameSet := gameSet.ComputeMinimumGameSet()
+
+		power := 1
+		for _, count := range minimumGameSet {
+			power *= count
+		}
+
+		sum += power
+	}
+
+	return sum
 }
 
 func parseInput(filename string) []string {

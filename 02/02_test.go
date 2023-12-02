@@ -101,3 +101,123 @@ func TestComputeIDSumOfPossibleGames(t *testing.T) {
 		assert.Equal(t, tc.want, got)
 	}
 }
+
+func TestComputeMinimumGameSet(t *testing.T) {
+	type test struct {
+		input GameSet
+		want  MinimumGameSet
+	}
+
+	tests := []test{
+		{
+			GameSet{
+				{"blue": 3, "red": 4},
+				{"red": 1, "green": 2, "blue": 6},
+				{"green": 2},
+			},
+			MinimumGameSet{
+				"red":   4,
+				"green": 2,
+				"blue":  6,
+			},
+		},
+		{
+			GameSet{
+				{"blue": 1, "green": 2},
+				{"green": 3, "blue": 4, "red": 1},
+				{"green": 1, "blue": 1},
+			},
+			MinimumGameSet{
+				"red":   1,
+				"green": 3,
+				"blue":  4,
+			},
+		},
+		{
+			GameSet{
+				{"green": 8, "blue": 6, "red": 20},
+				{"blue": 5, "red": 4, "green": 13},
+				{"green": 5, "red": 1},
+			},
+			MinimumGameSet{
+				"red":   20,
+				"green": 13,
+				"blue":  6,
+			},
+		},
+		{
+			GameSet{
+				{"green": 1, "red": 3, "blue": 6},
+				{"green": 3, "red": 6},
+				{"green": 3, "blue": 15, "red": 14},
+			},
+			MinimumGameSet{
+				"red":   14,
+				"green": 3,
+				"blue":  15,
+			},
+		},
+		{
+			GameSet{
+				{"red": 6, "blue": 1, "green": 3},
+				{"blue": 2, "red": 1, "green": 2},
+			},
+			MinimumGameSet{
+				"red":   6,
+				"green": 3,
+				"blue":  2,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		got := tc.input.ComputeMinimumGameSet()
+
+		assert.Equal(t, tc.want, got)
+	}
+}
+
+func TestComputeSumOfPowerOfMinimalGameSets(t *testing.T) {
+	type test struct {
+		input GameSetsInput
+		want  int
+	}
+
+	tests := []test{
+		{
+			GameSetsInput{
+				{
+					{"blue": 3, "red": 4},
+					{"red": 1, "green": 2, "blue": 6},
+					{"green": 2},
+				},
+				{
+					{"blue": 1, "green": 2},
+					{"green": 3, "blue": 4, "red": 1},
+					{"green": 1, "blue": 1},
+				},
+				{
+					{"green": 8, "blue": 6, "red": 20},
+					{"blue": 5, "red": 4, "green": 13},
+					{"green": 5, "red": 1},
+				},
+				{
+					{"green": 1, "red": 3, "blue": 6},
+					{"green": 3, "red": 6},
+					{"green": 3, "blue": 15, "red": 14},
+				},
+				{
+					{"red": 6, "blue": 1, "green": 3},
+					{"blue": 2, "red": 1, "green": 2},
+				},
+			},
+			2286,
+		},
+	}
+
+	for _, tc := range tests {
+		got := tc.input.ComputeSumOfPowerOfMinimalGameSets()
+
+		assert.Equal(t, tc.want, got)
+	}
+}
