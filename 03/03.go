@@ -90,9 +90,9 @@ func ConvertInputToEngineSchematic(input []string) EngineSchematic {
 
 func (es EngineSchematic) GetPartNumbersValues() []int {
 	partNumbers := make([]int, 0)
-	found := false
+
+nextNumber:
 	for _, number := range es.Numbers {
-		found = false
 		for _, adjCoordsOfDigit := range number.GetAllAdjacentCoordinates() {
 			for _, symbol := range es.Symbols {
 				if adjCoordsOfDigit == symbol.Coordinates {
@@ -101,14 +101,9 @@ func (es EngineSchematic) GetPartNumbersValues() []int {
 						panic(err)
 					}
 					partNumbers = append(partNumbers, intValue)
-					found = true
+
+					continue nextNumber
 				}
-				if found {
-					break
-				}
-			}
-			if found {
-				break
 			}
 		}
 	}
