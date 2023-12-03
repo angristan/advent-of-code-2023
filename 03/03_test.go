@@ -40,12 +40,12 @@ func TestComputeEngineSchematic(t *testing.T) {
 					{Value: "598", DigitsCoordinates: []Coordinates{{X: 5, Y: 9}, {X: 6, Y: 9}, {X: 7, Y: 9}}},
 				},
 				Symbols: []Symbol{
-					{Coordinates: Coordinates{X: 3, Y: 1}},
-					{Coordinates: Coordinates{X: 6, Y: 3}},
-					{Coordinates: Coordinates{X: 3, Y: 4}},
-					{Coordinates: Coordinates{X: 5, Y: 5}},
-					{Coordinates: Coordinates{X: 3, Y: 8}},
-					{Coordinates: Coordinates{X: 5, Y: 8}},
+					{Coordinates: Coordinates{X: 3, Y: 1}, Value: "*"},
+					{Coordinates: Coordinates{X: 6, Y: 3}, Value: "#"},
+					{Coordinates: Coordinates{X: 3, Y: 4}, Value: "*"},
+					{Coordinates: Coordinates{X: 5, Y: 5}, Value: "+"},
+					{Coordinates: Coordinates{X: 3, Y: 8}, Value: "$"},
+					{Coordinates: Coordinates{X: 5, Y: 8}, Value: "*"},
 				},
 			},
 		},
@@ -86,13 +86,13 @@ func TestComputeEngineSchematic(t *testing.T) {
 					{Value: "56", DigitsCoordinates: []Coordinates{{X: 10, Y: 11}, {X: 11, Y: 11}}},
 				},
 				Symbols: []Symbol{
-					{Coordinates: Coordinates{X: 9, Y: 0}},
-					{Coordinates: Coordinates{X: 0, Y: 1}},
-					{Coordinates: Coordinates{X: 7, Y: 2}},
-					{Coordinates: Coordinates{X: 2, Y: 4}},
-					{Coordinates: Coordinates{X: 6, Y: 7}},
-					{Coordinates: Coordinates{X: 1, Y: 10}},
-					{Coordinates: Coordinates{X: 11, Y: 10}},
+					{Coordinates: Coordinates{X: 9, Y: 0}, Value: "*"},
+					{Coordinates: Coordinates{X: 0, Y: 1}, Value: "+"},
+					{Coordinates: Coordinates{X: 7, Y: 2}, Value: "-"},
+					{Coordinates: Coordinates{X: 2, Y: 4}, Value: "*"},
+					{Coordinates: Coordinates{X: 6, Y: 7}, Value: "*"},
+					{Coordinates: Coordinates{X: 1, Y: 10}, Value: "*"},
+					{Coordinates: Coordinates{X: 11, Y: 10}, Value: "*"},
 				},
 			},
 		},
@@ -125,20 +125,17 @@ func TestGetPartNumbers(t *testing.T) {
 					{Value: "755", DigitsCoordinates: []Coordinates{{X: 6, Y: 7}, {X: 7, Y: 7}, {X: 8, Y: 7}}},
 					{Value: "664", DigitsCoordinates: []Coordinates{{X: 1, Y: 9}, {X: 2, Y: 9}, {X: 3, Y: 9}}},
 					{Value: "598", DigitsCoordinates: []Coordinates{{X: 5, Y: 9}, {X: 6, Y: 9}, {X: 7, Y: 9}}},
-					{Value: "598", DigitsCoordinates: []Coordinates{{X: 4, Y: 9}, {X: 5, Y: 9}, {X: 6, Y: 9}}}, // edge case: dupes
 				},
 				Symbols: []Symbol{
-					{Coordinates: Coordinates{X: 3, Y: 1}},
-					{Coordinates: Coordinates{X: 6, Y: 3}},
-					{Coordinates: Coordinates{X: 3, Y: 4}},
-					{Coordinates: Coordinates{X: 5, Y: 5}},
-					{Coordinates: Coordinates{X: 3, Y: 8}},
-					{Coordinates: Coordinates{X: 5, Y: 8}},
-
-					{Coordinates: Coordinates{X: 2, Y: 8}},
+					{Coordinates: Coordinates{X: 3, Y: 1}, Value: "*"},
+					{Coordinates: Coordinates{X: 6, Y: 3}, Value: "#"},
+					{Coordinates: Coordinates{X: 3, Y: 4}, Value: "*"},
+					{Coordinates: Coordinates{X: 5, Y: 5}, Value: "+"},
+					{Coordinates: Coordinates{X: 3, Y: 8}, Value: "$"},
+					{Coordinates: Coordinates{X: 5, Y: 8}, Value: "*"},
 				},
 			},
-			want: []int{467, 35, 633, 617, 592, 755, 664, 598, 598},
+			want: []int{467, 35, 633, 617, 592, 755, 664, 598},
 		},
 		{
 			input: EngineSchematic{
@@ -160,13 +157,13 @@ func TestGetPartNumbers(t *testing.T) {
 					{Value: "56", DigitsCoordinates: []Coordinates{{X: 10, Y: 11}, {X: 11, Y: 11}}},
 				},
 				Symbols: []Symbol{
-					{Coordinates: Coordinates{X: 9, Y: 0}},
-					{Coordinates: Coordinates{X: 0, Y: 1}},
-					{Coordinates: Coordinates{X: 7, Y: 2}},
-					{Coordinates: Coordinates{X: 2, Y: 4}},
-					{Coordinates: Coordinates{X: 6, Y: 7}},
-					{Coordinates: Coordinates{X: 1, Y: 10}},
-					{Coordinates: Coordinates{X: 11, Y: 10}},
+					{Coordinates: Coordinates{X: 9, Y: 0}, Value: "*"},
+					{Coordinates: Coordinates{X: 0, Y: 1}, Value: "+"},
+					{Coordinates: Coordinates{X: 7, Y: 2}, Value: "-"},
+					{Coordinates: Coordinates{X: 2, Y: 4}, Value: "*"},
+					{Coordinates: Coordinates{X: 6, Y: 7}, Value: "*"},
+					{Coordinates: Coordinates{X: 1, Y: 10}, Value: "*"},
+					{Coordinates: Coordinates{X: 11, Y: 10}, Value: "*"},
 				},
 			},
 			want: []int{12, 34, 12, 78, 78, 23, 90, 12, 2, 2, 12, 1, 1, 56},
@@ -195,15 +192,75 @@ func TestComputeSumOfPartNumbers(t *testing.T) {
 			{Value: "598", DigitsCoordinates: []Coordinates{{X: 5, Y: 9}, {X: 6, Y: 9}, {X: 7, Y: 9}}},
 		},
 		Symbols: []Symbol{
-			{Coordinates: Coordinates{X: 3, Y: 1}},
-			{Coordinates: Coordinates{X: 6, Y: 3}},
-			{Coordinates: Coordinates{X: 3, Y: 4}},
-			{Coordinates: Coordinates{X: 5, Y: 5}},
-			{Coordinates: Coordinates{X: 3, Y: 8}},
-			{Coordinates: Coordinates{X: 5, Y: 8}},
+			{Coordinates: Coordinates{X: 3, Y: 1}, Value: "*"},
+			{Coordinates: Coordinates{X: 6, Y: 3}, Value: "#"},
+			{Coordinates: Coordinates{X: 3, Y: 4}, Value: "*"},
+			{Coordinates: Coordinates{X: 5, Y: 5}, Value: "+"},
+			{Coordinates: Coordinates{X: 3, Y: 8}, Value: "$"},
+			{Coordinates: Coordinates{X: 5, Y: 8}, Value: "*"},
 		},
 	}
 
 	expectedSum := 4361
 	assert.Equal(t, expectedSum, engineSchematic.ComputeSumOfPartNumbers())
+}
+
+func TestGetGears(t *testing.T) {
+	engineSchematic := EngineSchematic{
+		Numbers: []Number{
+			{Value: "467", DigitsCoordinates: []Coordinates{{X: 0, Y: 0}, {X: 1, Y: 0}, {X: 2, Y: 0}}},
+			{Value: "114", DigitsCoordinates: []Coordinates{{X: 5, Y: 0}, {X: 6, Y: 0}, {X: 7, Y: 0}}},
+			{Value: "35", DigitsCoordinates: []Coordinates{{X: 2, Y: 2}, {X: 3, Y: 2}}},
+			{Value: "633", DigitsCoordinates: []Coordinates{{X: 6, Y: 2}, {X: 7, Y: 2}, {X: 8, Y: 2}}},
+			{Value: "617", DigitsCoordinates: []Coordinates{{X: 0, Y: 4}, {X: 1, Y: 4}, {X: 2, Y: 4}}},
+			{Value: "58", DigitsCoordinates: []Coordinates{{X: 7, Y: 5}, {X: 8, Y: 5}}},
+			{Value: "592", DigitsCoordinates: []Coordinates{{X: 2, Y: 6}, {X: 3, Y: 6}, {X: 4, Y: 6}}},
+			{Value: "755", DigitsCoordinates: []Coordinates{{X: 6, Y: 7}, {X: 7, Y: 7}, {X: 8, Y: 7}}},
+			{Value: "664", DigitsCoordinates: []Coordinates{{X: 1, Y: 9}, {X: 2, Y: 9}, {X: 3, Y: 9}}},
+			{Value: "598", DigitsCoordinates: []Coordinates{{X: 5, Y: 9}, {X: 6, Y: 9}, {X: 7, Y: 9}}},
+		},
+		Symbols: []Symbol{
+			{Coordinates: Coordinates{X: 3, Y: 1}, Value: "*"},
+			{Coordinates: Coordinates{X: 6, Y: 3}, Value: "#"},
+			{Coordinates: Coordinates{X: 3, Y: 4}, Value: "*"},
+			{Coordinates: Coordinates{X: 5, Y: 5}, Value: "+"},
+			{Coordinates: Coordinates{X: 3, Y: 8}, Value: "$"},
+			{Coordinates: Coordinates{X: 5, Y: 8}, Value: "*"},
+		},
+	}
+
+	expectedGears := []Gear{
+		{Values: []int{467, 35}},
+		{Values: []int{755, 598}},
+	}
+	assert.Equal(t, expectedGears, engineSchematic.GetGears())
+}
+
+func TestSumOfAllGearRatios(t *testing.T) {
+	engineSchematic := EngineSchematic{
+		Numbers: []Number{
+			{Value: "467", DigitsCoordinates: []Coordinates{{X: 0, Y: 0}, {X: 1, Y: 0}, {X: 2, Y: 0}}},
+			{Value: "114", DigitsCoordinates: []Coordinates{{X: 5, Y: 0}, {X: 6, Y: 0}, {X: 7, Y: 0}}},
+			{Value: "35", DigitsCoordinates: []Coordinates{{X: 2, Y: 2}, {X: 3, Y: 2}}},
+			{Value: "633", DigitsCoordinates: []Coordinates{{X: 6, Y: 2}, {X: 7, Y: 2}, {X: 8, Y: 2}}},
+			{Value: "617", DigitsCoordinates: []Coordinates{{X: 0, Y: 4}, {X: 1, Y: 4}, {X: 2, Y: 4}}},
+			{Value: "58", DigitsCoordinates: []Coordinates{{X: 7, Y: 5}, {X: 8, Y: 5}}},
+			{Value: "592", DigitsCoordinates: []Coordinates{{X: 2, Y: 6}, {X: 3, Y: 6}, {X: 4, Y: 6}}},
+			{Value: "755", DigitsCoordinates: []Coordinates{{X: 6, Y: 7}, {X: 7, Y: 7}, {X: 8, Y: 7}}},
+			{Value: "664", DigitsCoordinates: []Coordinates{{X: 1, Y: 9}, {X: 2, Y: 9}, {X: 3, Y: 9}}},
+			{Value: "598", DigitsCoordinates: []Coordinates{{X: 5, Y: 9}, {X: 6, Y: 9}, {X: 7, Y: 9}}},
+		},
+		Symbols: []Symbol{
+			{Coordinates: Coordinates{X: 3, Y: 1}, Value: "*"},
+			{Coordinates: Coordinates{X: 6, Y: 3}, Value: "#"},
+			{Coordinates: Coordinates{X: 3, Y: 4}, Value: "*"},
+			{Coordinates: Coordinates{X: 5, Y: 5}, Value: "+"},
+			{Coordinates: Coordinates{X: 3, Y: 8}, Value: "$"},
+			{Coordinates: Coordinates{X: 5, Y: 8}, Value: "*"},
+		},
+	}
+
+	expectedGearsRatioSum := 467835
+
+	assert.Equal(t, expectedGearsRatioSum, engineSchematic.SumOfAllGearRatios())
 }

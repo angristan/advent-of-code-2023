@@ -13,6 +13,7 @@ type Number struct {
 }
 
 type Symbol struct {
+	Value       string
 	Coordinates Coordinates
 }
 
@@ -65,7 +66,10 @@ func ComputeEngineSchematic(input []string) EngineSchematic {
 	for y, line := range input {
 		for x, char := range line {
 			if !isRuneADigit(char) && char != '.' {
-				symbols = append(symbols, Symbol{Coordinates{x, y}})
+				symbols = append(symbols, Symbol{
+					Coordinates: Coordinates{x, y},
+					Value:       string(char),
+				})
 			}
 		}
 	}
@@ -129,6 +133,72 @@ func (es EngineSchematic) ComputeSumOfPartNumbers() int {
 	return sum
 }
 
+type Gear struct {
+	Values []int
+}
+
+/*
+A gear is any * symbol that is adjacent to exactly two part numbers.
+*/
+func (es EngineSchematic) GetGears() []Gear {
+	asteriskSymbolToNumbers := make(map[Coordinates][]Number)
+
+	for _, symbol := range es.Symbols {
+		if symbol.Value == "*" {
+			asteriskSymbolToNumbers[symbol.Coordinates] = make([]Number, 0)
+
+			for _, number := range es.Numbers {
+				for _, adjCoordsOfDigit := range number.GetAllAdjacentCoordinates() {
+					if adjCoordsOfDigit == symbol.Coordinates {
+						asteriskSymbolToNumbers[symbol.Coordinates] = append(asteriskSymbolToNumbers[symbol.Coordinates], number)
+						break
+					}
+				}
+			}
+		}
+	}
+
+	gears := make([]Gear, 0)
+
+	for _, numbers := range asteriskSymbolToNumbers {
+		if len(numbers) == 2 {
+			valueInt1, err := strconv.Atoi(numbers[0].Value)
+			if err != nil {
+				panic(err)
+			}
+
+			valueInt2, err := strconv.Atoi(numbers[1].Value)
+			if err != nil {
+				panic(err)
+			}
+
+			gears = append(gears, Gear{Values: []int{valueInt1, valueInt2}})
+		}
+	}
+
+	return gears
+}
+
+/*
+	Its gear ratio is the result of multiplying those two numbers together.
+*/
+
+func (g Gear) GetGearRatio() int {
+	return g.Values[0] * g.Values[1]
+}
+
+func (es EngineSchematic) SumOfAllGearRatios() int {
+	gears := es.GetGears()
+
+	sum := 0
+
+	for _, gear := range gears {
+		sum += gear.GetGearRatio()
+	}
+
+	return sum
+}
+
 func isRuneADigit(char rune) bool {
 	return char >= '0' && char <= '9'
 }
@@ -159,4 +229,7 @@ func main() {
 	engineSchematic := ComputeEngineSchematic(input)
 	part1Sum := engineSchematic.ComputeSumOfPartNumbers()
 	fmt.Printf("Part 1: %d\n", part1Sum)
+
+	part2Sum := engineSchematic.SumOfAllGearRatios()
+	fmt.Printf("Part 2: %d\n", part2Sum)
 }
