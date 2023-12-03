@@ -1,16 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"log"
-	"os"
 	"strconv"
+
+	"github.com/angristan/advent-of-code-2023/utils"
 )
 
-type CalibrationInput []string
+func main() {
+	input := utils.ParseInput("input.txt")
 
-func isRuneANumber(char rune) bool {
-	return char >= '0' && char <= '9'
+	sum := ComputeCalibrationSum(input)
+
+	log.Printf("Sum: %d", sum)
 }
 
 var digitsSpelledOut = map[string]int{
@@ -26,13 +28,15 @@ var digitsSpelledOut = map[string]int{
 	"nine":  9,
 }
 
+type CalibrationInput []string
+
 func ComputeCalibrationSum(input CalibrationInput) int {
 	sum := 0
 
 	for _, line := range input {
 		digitsOnTheLine := []rune{}
 		for i, char := range line {
-			if isRuneANumber(char) {
+			if utils.IsRuneADigit(char) {
 				if len(digitsOnTheLine) < 2 {
 					digitsOnTheLine = append(digitsOnTheLine, char)
 				} else {
@@ -68,32 +72,4 @@ func ComputeCalibrationSum(input CalibrationInput) int {
 	}
 
 	return sum
-}
-
-func main() {
-	input := parseInput("input.txt")
-
-	sum := ComputeCalibrationSum(input)
-
-	log.Printf("Sum: %d", sum)
-}
-
-func parseInput(filename string) CalibrationInput {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	var input CalibrationInput
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return input
 }

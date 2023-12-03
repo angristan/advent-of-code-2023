@@ -99,7 +99,7 @@ func TestComputeEngineSchematic(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got := ComputeEngineSchematic(tc.input)
+		got := ConvertInputToEngineSchematic(tc.input)
 
 		assert.Equal(t, tc.want, got)
 	}

@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"github.com/angristan/advent-of-code-2023/utils"
 )
 
 func main() {
-	input := parseInput("input.txt")
+	input := utils.ParseInput("input.txt")
 
 	gameSets := ConvertInput(input)
 
@@ -155,24 +155,4 @@ func (gameSets GameSetsInput) ComputeSumOfPowerOfMinimalGameSets() int {
 	}
 
 	return sum
-}
-
-func parseInput(filename string) []string {
-	file, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	var input []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	return input
 }

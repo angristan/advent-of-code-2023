@@ -1,11 +1,22 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
+
+	"github.com/angristan/advent-of-code-2023/utils"
 )
+
+func main() {
+	input := utils.ParseInput("input.txt")
+
+	engineSchematic := ConvertInputToEngineSchematic(input)
+	part1Sum := engineSchematic.ComputeSumOfPartNumbers()
+	fmt.Printf("Part 1: %d\n", part1Sum)
+
+	part2Sum := engineSchematic.SumOfAllGearRatios()
+	fmt.Printf("Part 2: %d\n", part2Sum)
+}
 
 type Number struct {
 	Value             string
@@ -34,13 +45,13 @@ but apparently any number adjacent to a symbol, even diagonally, is a "part numb
 and should be included in your sum. (Periods (.) do not count as a symbol.)
 */
 
-func ComputeEngineSchematic(input []string) EngineSchematic {
+func ConvertInputToEngineSchematic(input []string) EngineSchematic {
 	numbers := make([]Number, 0)
 
 	for y, line := range input {
 		tempNumber := Number{}
 		for x, char := range line {
-			if isRuneADigit(char) {
+			if utils.IsRuneADigit(char) {
 				if len(tempNumber.DigitsCoordinates) == 0 { // New number
 					tempNumber.Value = fmt.Sprintf("%d", int(char-'0'))
 					tempNumber.DigitsCoordinates = append(tempNumber.DigitsCoordinates, Coordinates{x, y})
@@ -65,7 +76,7 @@ func ComputeEngineSchematic(input []string) EngineSchematic {
 
 	for y, line := range input {
 		for x, char := range line {
-			if !isRuneADigit(char) && char != '.' {
+			if !utils.IsRuneADigit(char) && char != '.' {
 				symbols = append(symbols, Symbol{
 					Coordinates: Coordinates{x, y},
 					Value:       string(char),
@@ -180,9 +191,8 @@ func (es EngineSchematic) GetGears() []Gear {
 }
 
 /*
-	Its gear ratio is the result of multiplying those two numbers together.
+Its gear ratio is the result of multiplying those two numbers together.
 */
-
 func (g Gear) GetGearRatio() int {
 	return g.Values[0] * g.Values[1]
 }
@@ -197,39 +207,4 @@ func (es EngineSchematic) SumOfAllGearRatios() int {
 	}
 
 	return sum
-}
-
-func isRuneADigit(char rune) bool {
-	return char >= '0' && char <= '9'
-}
-
-func parseInput(filename string) []string {
-	file, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	var input []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	return input
-}
-
-func main() {
-	input := parseInput("input.txt")
-
-	engineSchematic := ComputeEngineSchematic(input)
-	part1Sum := engineSchematic.ComputeSumOfPartNumbers()
-	fmt.Printf("Part 1: %d\n", part1Sum)
-
-	part2Sum := engineSchematic.SumOfAllGearRatios()
-	fmt.Printf("Part 2: %d\n", part2Sum)
 }
