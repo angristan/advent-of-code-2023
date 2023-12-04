@@ -14,10 +14,18 @@ func main() {
 	cards := ConvertInputToListOfCards(input)
 	part1Score := cards.ComputeTotalPoints()
 	fmt.Printf("Part 1: %d\n", part1Score)
+
+	part2Score := cards.ComputeTotalCardsCount()
+	fmt.Printf("Part 2: %d\n", part2Score)
 }
 
 /*
-The Elf leads you over to the pile of colorful cards. There, you discover dozens of scratchcards, all with their opaque covering already scratched off. Picking one up, it looks like each card has two lists of numbers separated by a vertical bar (|): a list of winning numbers and then a list of numbers you have. You organize the information into a table (your puzzle input).
+The Elf leads you over to the pile of colorful cards. There, you discover
+dozens of scratchcards, all with their opaque covering already scratched off.
+Picking one up, it looks like each card has two lists of numbers
+separated by a vertical bar (|): a list of winning numbers and then
+a list of numbers you have.
+You organize the information into a table (your puzzle input).
 
 For example:
 
@@ -31,6 +39,7 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 type CardNumber int
 
 type Card struct {
+	ID             CardNumber
 	WinningNumbers []CardNumber
 	MyNumbers      []CardNumber
 }
@@ -40,8 +49,9 @@ type ElfStack []Card
 func ConvertInputToListOfCards(input []string) ElfStack {
 	cards := make([]Card, 0)
 
-	for _, line := range input {
+	for i, line := range input {
 		card := Card{}
+		card.ID = CardNumber(i + 1)
 
 		// Remove the "Card X: " part
 		numbers := strings.Split(line, ":")[1]
@@ -84,7 +94,10 @@ func ConvertInputToListOfCards(input []string) ElfStack {
 }
 
 /*
-As far as the Elf has been able to figure out, you have to figure out which of the numbers you have appear in the list of winning numbers. The first match makes the card worth one point and each match after the first doubles the point value of that card.
+As far as the Elf has been able to figure out, you have to figure out which
+of the numbers you have appear in the list of winning numbers. The first match
+makes the card worth one point and each match after the first doubles
+the point value of that card.
 */
 
 func (card Card) ComputePoints() int {
@@ -113,4 +126,51 @@ func (elfStack ElfStack) ComputeTotalPoints() int {
 	}
 
 	return totalPoints
+}
+
+/*
+There's no such thing as "points". Instead, scratchcards only cause you to win
+more scratchcards equal to the number of winning numbers you have.
+*/
+
+func (stack ElfStack) ComputeTotalCardsCount() int {
+	cardMatchCount := make([]int, len(stack))
+	cardCount := make([]int, len(stack))
+
+	for _, card := range stack {
+		cardMatchCount[card.ID-1] = card.ComputeMatchCount()
+		cardCount[card.ID-1] = 1
+	}
+
+	totalCardsCount := 0
+
+	for card, count := range cardCount {
+		totalCardsCount += count
+
+		for i := 0; i < cardMatchCount[card]; i++ {
+			cardNumberToIncrease := card + 1 + i
+
+			if int(cardNumberToIncrease) >= len(cardMatchCount) {
+				break
+			}
+
+			cardCount[cardNumberToIncrease] += count
+		}
+	}
+
+	return totalCardsCount
+}
+
+func (card Card) ComputeMatchCount() int {
+	count := 0
+
+	for _, myNumber := range card.MyNumbers {
+		for _, winningNumber := range card.WinningNumbers {
+			if myNumber == winningNumber {
+				count++
+			}
+		}
+	}
+
+	return count
 }
