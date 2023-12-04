@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestComputeCalibrationSum(t *testing.T) {
 	type test struct {
@@ -39,5 +41,21 @@ func TestComputeCalibrationSum(t *testing.T) {
 			t.Errorf("Expected sum to be %d, got %d", tc.want, got)
 		}
 
+	}
+}
+
+func BenchmarkComputeCalibrationSum(b *testing.B) {
+	input := []string{
+		"two1nine",
+		"eightwothree",
+		"abcone2threexyz",
+		"xtwone3four",
+		"4nineeightseven2",
+		"zoneight234",
+		"7pqrstsixteen",
+	}
+
+	for i := 0; i < b.N; i++ {
+		ComputeCalibrationSum(input)
 	}
 }
