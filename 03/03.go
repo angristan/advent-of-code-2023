@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/angristan/advent-of-code-2023/utils"
@@ -154,11 +155,8 @@ func (es EngineSchematic) GetGears() []Gear {
 			asteriskSymbolToNumbers[symbol.Coordinates] = make([]Number, 0)
 
 			for _, number := range es.Numbers {
-				for _, adjCoordsOfDigit := range number.GetAllAdjacentCoordinates() {
-					if adjCoordsOfDigit == symbol.Coordinates {
-						asteriskSymbolToNumbers[symbol.Coordinates] = append(asteriskSymbolToNumbers[symbol.Coordinates], number)
-						break
-					}
+				if slices.Contains(number.GetAllAdjacentCoordinates(), symbol.Coordinates) {
+					asteriskSymbolToNumbers[symbol.Coordinates] = append(asteriskSymbolToNumbers[symbol.Coordinates], number)
 				}
 			}
 		}
