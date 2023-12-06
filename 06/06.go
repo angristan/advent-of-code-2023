@@ -14,6 +14,10 @@ func main() {
 	parsedInput := ConvertRawInputToInput(input)
 	part1Score := parsedInput.ComputeAllPossibleRecordCount()
 	fmt.Printf("Part 1: %d\n", part1Score)
+
+	parsedInputv2 := ConvertRawInputToInputV2(input)
+	part2Score := parsedInputv2.ComputeAllPossibleRecordCount()
+	fmt.Printf("Part 2: %d\n", part2Score)
 }
 
 type Race struct {
@@ -92,4 +96,39 @@ func (input Input) ComputeAllPossibleRecordCount() int {
 	}
 
 	return total
+}
+
+func ConvertRawInputToInputV2(rawInput []string) Input {
+	rawDurations := numberRegex.FindAllString(rawInput[0], -1)
+
+	durationString := ""
+	for _, rawDuration := range rawDurations {
+		durationString += rawDuration
+	}
+	duration, err := strconv.Atoi(durationString)
+	if err != nil {
+		panic(err)
+	}
+
+	rawDistances := numberRegex.FindAllString(rawInput[1], -1)
+
+	distanceString := ""
+	for _, rawDistance := range rawDistances {
+		distanceString += string(rawDistance)
+	}
+	distance, err := strconv.Atoi(distanceString)
+	if err != nil {
+		panic(err)
+	}
+
+	input := Input{
+		[]Race{
+			{
+				timeDurationMs:   duration,
+				distanceRecordMm: distance,
+			},
+		},
+	}
+
+	return input
 }
