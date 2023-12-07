@@ -22,8 +22,8 @@ func main() {
 
 	parsedInputPart2 := ConvertRawInputToInput(input)
 	for i := range parsedInputPart2.Hands {
-		parsedInput.Hands[i].ComputeAndAssignHandType()
-		parsedInput.Hands[i].JokerMode()
+		parsedInputPart2.Hands[i].ComputeAndAssignHandType()
+		parsedInputPart2.Hands[i].JokerMode()
 	}
 	parsedInputPart2.SortHands(StrengthsPart2)
 	part2Score := parsedInputPart2.ComputeTotalPoints()
