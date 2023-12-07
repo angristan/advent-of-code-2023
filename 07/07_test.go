@@ -15,8 +15,8 @@ func TestConvertRawInputToInput(t *testing.T) {
 		"QQQJA 483",
 	}
 
-	expected := InputV1{
-		Hands: []HandV1{
+	expected := Input{
+		Hands: []Hand{
 			{Cards: "32T3K", Bid: 765},
 			{Cards: "T55J5", Bid: 684},
 			{Cards: "KK677", Bid: 28},
@@ -29,129 +29,8 @@ func TestConvertRawInputToInput(t *testing.T) {
 }
 
 func TestOccurences(t *testing.T) {
-	input := InputV1{
-		Hands: []HandV1{
-			{Cards: "T55J5", Bid: 684},
-			{Cards: "32T3K", Bid: 765},
-			{Cards: "QQQJA", Bid: 483},
-			{Cards: "KK677", Bid: 28},
-			{Cards: "KTJJT", Bid: 220},
-			{Cards: "T3T3J", Bid: 17},
-			{Cards: "Q2KJJ", Bid: 13},
-		},
-	}
-
-	expected := [][]int{
-		{2, 0, 1, 0, 0},
-		{3, 1, 0, 0, 0},
-		{2, 0, 1, 0, 0},
-		{1, 2, 0, 0, 0},
-		{1, 2, 0, 0, 0},
-		{1, 2, 0, 0, 0},
-		{3, 1, 0, 0, 0},
-	}
-
-	for i, hand := range input.Hands {
-		assert.Equal(t, expected[i], hand.Occurrences())
-	}
-}
-
-func TestSortHands(t *testing.T) {
-	type test struct {
-		input    InputV1
-		expected InputV1
-	}
-
-	tests := []test{
-		{
-			input: InputV1{
-				Hands: []HandV1{
-					{Cards: "T55J5", Bid: 684},
-					{Cards: "32T3K", Bid: 765},
-					{Cards: "QQQJA", Bid: 483},
-					{Cards: "KK677", Bid: 28},
-					{Cards: "KTJJT", Bid: 220},
-				},
-			},
-			expected: InputV1{
-				Hands: []HandV1{
-					{Cards: "32T3K", Bid: 765},
-					{Cards: "KTJJT", Bid: 220},
-					{Cards: "KK677", Bid: 28},
-					{Cards: "T55J5", Bid: 684},
-					{Cards: "QQQJA", Bid: 483},
-				},
-			},
-		},
-		{
-			input: InputV1{
-				Hands: []HandV1{
-					{Cards: "T3T3J", Bid: 17},
-					{Cards: "Q2KJJ", Bid: 13},
-				},
-			},
-			expected: InputV1{
-				Hands: []HandV1{
-					{Cards: "Q2KJJ", Bid: 13},
-					{Cards: "T3T3J", Bid: 17},
-				},
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		tc.input.SortHands()
-		assert.Equal(t, tc.expected, tc.input)
-	}
-}
-
-func TestComputeTotalPoints(t *testing.T) {
-	input := InputV1{
-		Hands: []HandV1{
-			{Cards: "32T3K", Bid: 765},
-			{Cards: "KTJJT", Bid: 220},
-			{Cards: "KK677", Bid: 28},
-			{Cards: "T55J5", Bid: 684},
-			{Cards: "QQQJA", Bid: 483},
-		},
-	}
-
-	expected := 6440
-
-	assert.Equal(t, expected, input.ComputeTotalPoints())
-}
-
-/*
-==============================
-	Part 2
-==============================
-*/
-
-func TestConvertRawInputToInputV2(t *testing.T) {
-	input := []string{
-		"32T3K 765",
-		"T55J5 684",
-		"KK677 28",
-		"KTJJT 220",
-		"QQQJA 483",
-	}
-
-	expected := InputV2{
-		Hands: []HandV2{
-			{Cards: "32T3K", Bid: 765},
-			{Cards: "T55J5", Bid: 684},
-			{Cards: "KK677", Bid: 28},
-			{Cards: "KTJJT", Bid: 220},
-			{Cards: "QQQJA", Bid: 483},
-		},
-	}
-
-	assert.Equal(t, expected, ConvertRawInputToInputV2(input))
-}
-
-func TestOccurencesV2(t *testing.T) {
-	input := InputV2{
-		Hands: []HandV2{
+	input := Input{
+		Hands: []Hand{
 			{Cards: "T55J5", Bid: 684},
 			{Cards: "32T3K", Bid: 765},
 			{Cards: "QQQJA", Bid: 483},
@@ -179,20 +58,20 @@ func TestOccurencesV2(t *testing.T) {
 
 func TestComputeAndAssignHandType(t *testing.T) {
 	type test struct {
-		input    []HandV2
-		expected []HandV2
+		input    []Hand
+		expected []Hand
 	}
 
 	tests := []test{
 		{
-			input: []HandV2{
+			input: []Hand{
 				{Cards: "T55J5", Bid: 684},
 				{Cards: "32T3K", Bid: 765},
 				{Cards: "QQQJA", Bid: 483},
 				{Cards: "KK677", Bid: 28},
 				{Cards: "KTJJT", Bid: 220},
 			},
-			expected: []HandV2{
+			expected: []Hand{
 				{Cards: "T55J5", Bid: 684, HandType: ThreeOfAKind},
 				{Cards: "32T3K", Bid: 765, HandType: OnePair},
 				{Cards: "QQQJA", Bid: 483, HandType: ThreeOfAKind},
@@ -201,11 +80,11 @@ func TestComputeAndAssignHandType(t *testing.T) {
 			},
 		},
 		{
-			input: []HandV2{
+			input: []Hand{
 				{Cards: "T3T3J", Bid: 17},
 				{Cards: "Q2KJJ", Bid: 13},
 			},
-			expected: []HandV2{
+			expected: []Hand{
 				{Cards: "T3T3J", Bid: 17, HandType: TwoPair},
 				{Cards: "Q2KJJ", Bid: 13, HandType: OnePair},
 			},
@@ -222,20 +101,20 @@ func TestComputeAndAssignHandType(t *testing.T) {
 
 func TestJokerMode(t *testing.T) {
 	type test struct {
-		input    []HandV2
-		expected []HandV2
+		input    []Hand
+		expected []Hand
 	}
 
 	tests := []test{
 		{
-			input: []HandV2{
+			input: []Hand{
 				{Cards: "T55J5", Bid: 684, HandType: ThreeOfAKind},
 				{Cards: "32T3K", Bid: 765, HandType: OnePair},
 				{Cards: "QQQJA", Bid: 483, HandType: ThreeOfAKind},
 				{Cards: "KK677", Bid: 28, HandType: TwoPair},
 				{Cards: "KTJJT", Bid: 220, HandType: TwoPair},
 			},
-			expected: []HandV2{
+			expected: []Hand{
 				{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
 				{Cards: "32T3K", Bid: 765, HandType: OnePair},
 				{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
@@ -244,12 +123,12 @@ func TestJokerMode(t *testing.T) {
 			},
 		},
 		{
-			input: []HandV2{
+			input: []Hand{
 				{Cards: "T3T3J", Bid: 17, HandType: TwoPair},
 				{Cards: "Q2KJJ", Bid: 13, HandType: OnePair},
 				{Cards: "JJJQA", Bid: 483, HandType: ThreeOfAKind},
 			},
-			expected: []HandV2{
+			expected: []Hand{
 				{Cards: "T3T3J", Bid: 17, HandType: FullHouse},
 				{Cards: "Q2KJJ", Bid: 13, HandType: ThreeOfAKind},
 				{Cards: "JJJQA", Bid: 483, HandType: FourOfAKind},
@@ -265,43 +144,43 @@ func TestJokerMode(t *testing.T) {
 	}
 }
 
-func TestSortHandsV2(t *testing.T) {
+func TestSortHandsPart1(t *testing.T) {
 	type test struct {
-		input    InputV2
-		expected InputV2
+		input    Input
+		expected Input
 	}
 
 	tests := []test{
 		{
-			input: InputV2{
-				Hands: []HandV2{
-					{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
+			input: Input{
+				Hands: []Hand{
+					{Cards: "T55J5", Bid: 684, HandType: ThreeOfAKind},
 					{Cards: "32T3K", Bid: 765, HandType: OnePair},
-					{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
+					{Cards: "QQQJA", Bid: 483, HandType: ThreeOfAKind},
 					{Cards: "KK677", Bid: 28, HandType: TwoPair},
-					{Cards: "KTJJT", Bid: 220, HandType: FourOfAKind},
+					{Cards: "KTJJT", Bid: 220, HandType: TwoPair},
 				},
 			},
-			expected: InputV2{
-				Hands: []HandV2{
+			expected: Input{
+				Hands: []Hand{
 					{Cards: "32T3K", Bid: 765, HandType: OnePair},
+					{Cards: "KTJJT", Bid: 220, HandType: TwoPair},
 					{Cards: "KK677", Bid: 28, HandType: TwoPair},
-					{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
-					{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
-					{Cards: "KTJJT", Bid: 220, HandType: FourOfAKind},
+					{Cards: "T55J5", Bid: 684, HandType: ThreeOfAKind},
+					{Cards: "QQQJA", Bid: 483, HandType: ThreeOfAKind},
 				},
 			},
 		},
 		{
-			input: InputV2{
-				Hands: []HandV2{
+			input: Input{
+				Hands: []Hand{
 					{Cards: "T3T3J", Bid: 17, HandType: FullHouse},
 					{Cards: "Q2KJJ", Bid: 13, HandType: ThreeOfAKind},
 					{Cards: "JJJQA", Bid: 483, HandType: FourOfAKind},
 				},
 			},
-			expected: InputV2{
-				Hands: []HandV2{
+			expected: Input{
+				Hands: []Hand{
 					{Cards: "Q2KJJ", Bid: 13, HandType: ThreeOfAKind},
 					{Cards: "T3T3J", Bid: 17, HandType: FullHouse},
 					{Cards: "JJJQA", Bid: 483, HandType: FourOfAKind},
@@ -311,23 +190,96 @@ func TestSortHandsV2(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc.input.SortHands()
+		tc.input.SortHands(StrengthsPart1)
 		assert.Equal(t, tc.expected, tc.input)
 	}
 }
 
-func TestComputeTotalPointsV2(t *testing.T) {
-	input := InputV2{
-		Hands: []HandV2{
-			{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
-			{Cards: "32T3K", Bid: 765, HandType: OnePair},
-			{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
-			{Cards: "KK677", Bid: 28, HandType: TwoPair},
-			{Cards: "KTJJT", Bid: 220, HandType: FourOfAKind},
+func TestSortHandsPart2(t *testing.T) {
+	type test struct {
+		input    Input
+		expected Input
+	}
+
+	tests := []test{
+		{
+			input: Input{
+				Hands: []Hand{
+					{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
+					{Cards: "32T3K", Bid: 765, HandType: OnePair},
+					{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
+					{Cards: "KK677", Bid: 28, HandType: TwoPair},
+					{Cards: "KTJJT", Bid: 220, HandType: FourOfAKind},
+				},
+			},
+			expected: Input{
+				Hands: []Hand{
+					{Cards: "32T3K", Bid: 765, HandType: OnePair},
+					{Cards: "KK677", Bid: 28, HandType: TwoPair},
+					{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
+					{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
+					{Cards: "KTJJT", Bid: 220, HandType: FourOfAKind},
+				},
+			},
+		},
+		{
+			input: Input{
+				Hands: []Hand{
+					{Cards: "T3T3J", Bid: 17, HandType: FullHouse},
+					{Cards: "Q2KJJ", Bid: 13, HandType: ThreeOfAKind},
+					{Cards: "JJJQA", Bid: 483, HandType: FourOfAKind},
+				},
+			},
+			expected: Input{
+				Hands: []Hand{
+					{Cards: "Q2KJJ", Bid: 13, HandType: ThreeOfAKind},
+					{Cards: "T3T3J", Bid: 17, HandType: FullHouse},
+					{Cards: "JJJQA", Bid: 483, HandType: FourOfAKind},
+				},
+			},
 		},
 	}
 
-	expected := 5905
+	for _, tc := range tests {
+		tc.input.SortHands(StrengthsPart2)
+		assert.Equal(t, tc.expected, tc.input)
+	}
+}
 
-	assert.Equal(t, expected, input.ComputeTotalPoints())
+func TestComputeTotalPoints(t *testing.T) {
+	type test struct {
+		input         Input
+		expectedScore int
+	}
+
+	tests := []test{
+		{
+			input: Input{
+				Hands: []Hand{
+					{Cards: "32T3K", Bid: 765, HandType: OnePair},
+					{Cards: "KTJJT", Bid: 220, HandType: TwoPair},
+					{Cards: "KK677", Bid: 28, HandType: TwoPair},
+					{Cards: "T55J5", Bid: 684, HandType: ThreeOfAKind},
+					{Cards: "QQQJA", Bid: 483, HandType: ThreeOfAKind},
+				},
+			},
+			expectedScore: 6440,
+		},
+		{
+			input: Input{
+				Hands: []Hand{
+					{Cards: "32T3K", Bid: 765, HandType: OnePair},
+					{Cards: "KK677", Bid: 28, HandType: TwoPair},
+					{Cards: "T55J5", Bid: 684, HandType: FourOfAKind},
+					{Cards: "QQQJA", Bid: 483, HandType: FourOfAKind},
+					{Cards: "KTJJT", Bid: 220, HandType: FourOfAKind},
+				},
+			},
+			expectedScore: 5905,
+		},
+	}
+
+	for _, tc := range tests {
+		assert.Equal(t, tc.expectedScore, tc.input.ComputeTotalPoints())
+	}
 }
