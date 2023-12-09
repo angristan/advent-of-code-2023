@@ -14,6 +14,9 @@ func main() {
 
 	report := ConvertRawInputToReport(input)
 	fmt.Printf("Part 1: %d\n", report.ComputeSumOfNextValues())
+
+	report = ConvertRawInputToReport(input)
+	fmt.Printf("Part 2: %d\n", report.ComputeSumOfPreviousValues())
 }
 
 type History struct {
@@ -55,8 +58,6 @@ func ConvertRawInputToReport(rawInput []string) Report {
 func (history History) ComputeNextValue() int {
 	nextValue := 0
 
-	// fmt.Println("Computing next value for", history.Values)
-
 	currentSlice := history.Values
 	for true {
 		nextValue += currentSlice[len(currentSlice)-1]
@@ -71,8 +72,6 @@ func (history History) ComputeNextValue() int {
 			nextSlice[k-1] = delta
 
 		}
-
-		// fmt.Println(nextSlice)
 
 		// next slice is all 0s
 		if slices.Max(nextSlice) == 0 && slices.Min(nextSlice) == 0 {
@@ -90,6 +89,26 @@ func (report Report) ComputeSumOfNextValues() int {
 
 	for _, history := range report.Histories {
 		sum += history.ComputeNextValue()
+	}
+
+	return sum
+}
+
+func (history History) ComputePreviousValue() int {
+	// reverse slice so that the predicated next value will actually be the previous value
+	for i := len(history.Values)/2 - 1; i >= 0; i-- {
+		opp := len(history.Values) - 1 - i
+		history.Values[i], history.Values[opp] = history.Values[opp], history.Values[i]
+	}
+
+	return history.ComputeNextValue()
+}
+
+func (report Report) ComputeSumOfPreviousValues() int {
+	sum := 0
+
+	for _, history := range report.Histories {
+		sum += history.ComputePreviousValue()
 	}
 
 	return sum
