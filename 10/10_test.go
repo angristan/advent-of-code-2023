@@ -259,3 +259,86 @@ func TestGetFurthestPipeFromStartStepsCount(t *testing.T) {
 		assert.Equal(t, testCase.expected, testCase.grid.GetFurthestPipeFromStartStepsCount())
 	}
 }
+
+func TestGetEnclosedTiles(t *testing.T) {
+	type testCase struct {
+		grid     []string
+		expected []Tile
+	}
+
+	testCases := []testCase{
+		{
+			grid: []string{
+				"...........",
+				".S-------7.",
+				".|F-----7|.",
+				".||.....||.",
+				".||.....||.",
+				".|L-7.F-J|.",
+				".|..|.|..|.",
+				".L--J.L--J.",
+				"...........",
+			},
+			expected: []Tile{
+				{Type: PipeGround, CoordX: 2, CoordY: 6},
+				{Type: PipeGround, CoordX: 3, CoordY: 6},
+				{Type: PipeGround, CoordX: 7, CoordY: 6},
+				{Type: PipeGround, CoordX: 8, CoordY: 6},
+			},
+		},
+		{
+			grid: []string{
+				".F----7F7F7F7F-7....",
+				".|F--7||||||||FJ....",
+				".||.FJ||||||||L7....",
+				"FJL7L7LJLJ||LJ.L-7..",
+				"L--J.L7...LJS7F-7L7.",
+				"....F-J..F7FJ|L7L7L7",
+				"....L7.F7||L7|.L7L7|",
+				".....|FJLJ|FJ|F7|.LJ",
+				"....FJL-7.||.||||...",
+				"....L---J.LJ.LJLJ...",
+			},
+			expected: []Tile{
+				{Type: ".", CoordX: 14, CoordY: 3},
+				{Type: ".", CoordX: 7, CoordY: 4},
+				{Type: ".", CoordX: 8, CoordY: 4},
+				{Type: ".", CoordX: 9, CoordY: 4},
+				{Type: ".", CoordX: 7, CoordY: 5},
+				{Type: ".", CoordX: 8, CoordY: 5},
+				{Type: ".", CoordX: 6, CoordY: 6},
+				{Type: ".", CoordX: 14, CoordY: 6},
+			},
+		},
+		{
+			grid: []string{
+				"FF7FSF7F7F7F7F7F---7",
+				"L|LJ||||||||||||F--J",
+				"FL-7LJLJ||||||LJL-77",
+				"F--JF--7||LJLJ7F7FJ-",
+				"L---JF-JLJ.||-FJLJJ7",
+				"|F|F-JF---7F7-L7L|7|",
+				"|FFJF7L7F-JF7|JL---7",
+				"7-L-JL7||F7|L7F-7F7|",
+				"L.L7LFJ|||||FJL7||LJ",
+				"L7JLJL-JLJLJL--JLJ.L",
+			},
+			expected: []Tile{
+				{Type: "7", CoordX: 14, CoordY: 3},
+				{Type: ".", CoordX: 10, CoordY: 4},
+				{Type: "|", CoordX: 11, CoordY: 4},
+				{Type: "|", CoordX: 12, CoordY: 4},
+				{Type: "-", CoordX: 13, CoordY: 4},
+				{Type: "F", CoordX: 11, CoordY: 5},
+				{Type: "7", CoordX: 12, CoordY: 5},
+				{Type: "-", CoordX: 13, CoordY: 5},
+				{Type: "|", CoordX: 13, CoordY: 6},
+				{Type: "J", CoordX: 14, CoordY: 6},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		assert.Equal(t, testCase.expected, ConvertRawInputToSurfacePipes(testCase.grid).GetEnclosedTiles())
+	}
+}

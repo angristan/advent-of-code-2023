@@ -12,6 +12,9 @@ func main() {
 
 	grid := ConvertRawInputToSurfacePipes(input)
 	fmt.Printf("Part 1: %d\n", grid.GetFurthestPipeFromStartStepsCount())
+
+	enclosedTiles := grid.GetEnclosedTiles()
+	fmt.Printf("Part 2: %d\n", len(enclosedTiles))
 }
 
 type TileType string
@@ -72,13 +75,13 @@ func (grid TheGrid) GetAdjacentTiles(tile Tile) []Tile {
 	if tile.CoordX > 0 {
 		adjacentTiles = append(adjacentTiles, grid[tile.CoordY][tile.CoordX-1])
 	}
-	if tile.CoordX < len(grid)-1 {
+	if tile.CoordX < len(grid[0])-1 {
 		adjacentTiles = append(adjacentTiles, grid[tile.CoordY][tile.CoordX+1])
 	}
 	if tile.CoordY > 0 {
 		adjacentTiles = append(adjacentTiles, grid[tile.CoordY-1][tile.CoordX])
 	}
-	if tile.CoordY < len(grid[0])-1 {
+	if tile.CoordY < len(grid)-1 {
 		adjacentTiles = append(adjacentTiles, grid[tile.CoordY+1][tile.CoordX])
 	}
 
@@ -176,4 +179,121 @@ func (grid TheGrid) GetFurthestPipeFromStartStepsCount() int {
 	}
 
 	return int(math.Round(float64(steps) / 2))
+}
+
+type Coord struct {
+	X, Y int
+}
+
+func (grid TheGrid) GetLoopTiles() map[Coord]Tile {
+	loopMap := map[Coord]Tile{}
+
+	lastPipe := Tile{}
+	var currentPipe Tile
+	nextPipe := grid.GetStartPipe()
+	for {
+		currentPipe = nextPipe
+		connectedPipes := grid.GetConnectedPipes(currentPipe)
+
+		if connectedPipes[0] != lastPipe {
+			nextPipe = connectedPipes[0]
+		} else {
+			nextPipe = connectedPipes[1]
+		}
+		lastPipe = currentPipe
+
+		loopMap[Coord{X: currentPipe.CoordX, Y: currentPipe.CoordY}] = currentPipe
+
+		if nextPipe.Type == Start {
+			break
+		}
+	}
+
+	return loopMap
+}
+
+func (grid TheGrid) GetEnclosedTiles() []Tile {
+	loopMap := grid.GetLoopTiles()
+	enclosedTiles := []Tile{}
+
+	for y, row := range grid {
+		for x, tile := range row {
+			// If already in the loop: skip
+			if _, ok := loopMap[Coord{X: x, Y: y}]; ok {
+				continue
+			}
+
+			// If touches side of grid: outside
+			if x == 0 || x == len(grid[0])-1 || y == 0 || y == len(grid)-1 {
+				continue
+			}
+
+			// Take all tiles to the neareast side of the grid
+			var tilesToSide []Tile
+			if x < len(grid)/2 {
+				tilesToSide = grid[y][:x]
+			} else {
+				tilesToSide = grid[y][x+1:]
+			}
+
+			// Drop all PipeHorizontal
+			var tilesToSideWithoutPipeHorizontal []Tile
+			for _, tileToSide := range tilesToSide {
+				if tileToSide.Type != PipeHorizontal {
+					tilesToSideWithoutPipeHorizontal = append(tilesToSideWithoutPipeHorizontal, tileToSide)
+				}
+			}
+
+			// Drop all tiles not belonging to the loop
+			var loopTilesToSide []Tile
+			for _, tileToSide := range tilesToSideWithoutPipeHorizontal {
+				if _, ok := loopMap[Coord{X: tileToSide.CoordX, Y: tileToSide.CoordY}]; ok {
+					loopTilesToSide = append(loopTilesToSide, tileToSide)
+				}
+			}
+
+			// Replace L+7 and F+J by |
+			var layeredLoopTilesToSide []Tile
+			for i, tileToSide := range loopTilesToSide {
+				if i < len(loopTilesToSide)-1 {
+					if tileToSide.Type == PipeBendL && loopTilesToSide[i+1].Type == PipeBend7 {
+						layeredLoopTilesToSide = append(layeredLoopTilesToSide, Tile{
+							Type: PipeVertical,
+						})
+						continue
+					}
+
+					if tileToSide.Type == PipeBendF && loopTilesToSide[i+1].Type == PipeBendJ {
+						layeredLoopTilesToSide = append(layeredLoopTilesToSide, Tile{
+							Type: PipeVertical,
+						})
+						continue
+					}
+				}
+
+				if i >= 1 {
+					// If replaced by | in previous iteration: skip
+					if loopTilesToSide[i-1].Type == PipeBendL && tileToSide.Type == PipeBend7 {
+						continue
+					}
+					if loopTilesToSide[i-1].Type == PipeBendF && tileToSide.Type == PipeBendJ {
+						continue
+					}
+				}
+
+				layeredLoopTilesToSide = append(layeredLoopTilesToSide, tileToSide)
+			}
+
+			//TODO: S, but it works without it for some reason 🥸
+
+			// Count the number of layers the loop until the side
+			// If odd: inside
+			// If even: outside
+			if len(layeredLoopTilesToSide)%2 == 1 {
+				enclosedTiles = append(enclosedTiles, tile)
+			}
+		}
+	}
+
+	return enclosedTiles
 }
