@@ -286,7 +286,7 @@ func (grid TheGrid) GetEnclosedTiles() []Tile {
 
 			//TODO: S, but it works without it for some reason 🥸
 
-			// Count the number of layers the loop until the side
+			// Count the number of layers of the loop until the side
 			// If odd: inside
 			// If even: outside
 			if len(layeredLoopTilesToSide)%2 == 1 {
