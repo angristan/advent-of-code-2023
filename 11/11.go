@@ -12,8 +12,9 @@ func main() {
 	input := utils.ParseInput("input.txt")
 
 	image := ConvertRawInputToImage(input)
-	image = image.ExpandUniverse()
-	fmt.Printf("Part 1: %d\n", image.SumShortestPathBetweenAllGalaxies())
+	fmt.Printf("Part 1: %d\n", image.SumShortestPathBetweenAllGalaxies(2))
+
+	fmt.Printf("Part 2: %d\n", image.SumShortestPathBetweenAllGalaxies(1000000))
 }
 
 type Pixel string
@@ -39,45 +40,6 @@ func ConvertRawInputToImage(rawInput []string) Image {
 	return image
 }
 
-func (image Image) ExpandUniverse() Image {
-	newImage := make(Image, 0)
-
-	for _, row := range image {
-		if !slices.Contains(row, G) {
-			newRow := make([]Pixel, 0)
-			for i := 0; i < len(row); i++ {
-				newRow = append(newRow, s)
-			}
-			newImage = append(newImage, newRow)
-		}
-		newImage = append(newImage, row)
-	}
-
-	galaxyOnColumn := map[int]bool{}
-
-	for _, row := range newImage {
-		for i, pixel := range row {
-			if pixel == G {
-				galaxyOnColumn[i] = true
-			}
-		}
-	}
-
-	newImage2 := make(Image, 0)
-	for _, row := range newImage {
-		newRow := make([]Pixel, 0)
-		for i := 0; i < len(row); i++ {
-			if !galaxyOnColumn[i] {
-				newRow = append(newRow, s)
-			}
-			newRow = append(newRow, row[i])
-		}
-		newImage2 = append(newImage2, newRow)
-	}
-
-	return newImage2
-}
-
 type Coords struct {
 	X int
 	Y int
@@ -95,8 +57,10 @@ type Pair struct {
 	End   Coords
 }
 
-func (image Image) SumShortestPathBetweenAllGalaxies() int {
+func (image Image) SumShortestPathBetweenAllGalaxies(expensionFactor int) int {
 	galaxies := []Coords{}
+	expendedRowsIndexes := image.ExpandedRowsIndexes()
+	expendedColumnsIndexes := image.ExpandedColumnsIndexes()
 
 	for y, row := range image {
 		for x, pixel := range row {
@@ -117,7 +81,62 @@ func (image Image) SumShortestPathBetweenAllGalaxies() int {
 	sum := 0
 	for _, pair := range pairsOfGalaxies {
 		sum += ComputeShortestBetween(pair.Start, pair.End)
+
+		maxY := slices.Max([]int{pair.Start.Y, pair.End.Y})
+		minY := slices.Min([]int{pair.Start.Y, pair.End.Y})
+		maxX := slices.Max([]int{pair.Start.X, pair.End.X})
+		minX := slices.Min([]int{pair.Start.X, pair.End.X})
+
+		traversedRows := []int{}
+		for _, rowIndex := range expendedRowsIndexes {
+			if rowIndex >= minY && rowIndex <= maxY {
+				traversedRows = append(traversedRows, rowIndex)
+			}
+		}
+
+		traversedColumns := []int{}
+		for _, columnIndex := range expendedColumnsIndexes {
+			if columnIndex >= minX && columnIndex <= maxX {
+				traversedColumns = append(traversedColumns, columnIndex)
+			}
+		}
+
+		sum += (len(traversedRows) + len(traversedColumns)) * (expensionFactor - 1)
 	}
 
 	return sum
+}
+
+func (image Image) ExpandedRowsIndexes() []int {
+	expandedRowsIndexes := []int{}
+
+	for i, row := range image {
+		if !slices.Contains(row, G) {
+			expandedRowsIndexes = append(expandedRowsIndexes, i)
+		}
+	}
+
+	return expandedRowsIndexes
+}
+
+func (image Image) ExpandedColumnsIndexes() []int {
+	expandedColumnsIndexes := []int{}
+
+	galaxyOnColumn := map[int]bool{}
+
+	for _, row := range image {
+		for i, pixel := range row {
+			if pixel == G {
+				galaxyOnColumn[i] = true
+			}
+		}
+	}
+
+	for i := 0; i < len(image[0]); i++ {
+		if !galaxyOnColumn[i] {
+			expandedColumnsIndexes = append(expandedColumnsIndexes, i)
+		}
+	}
+
+	return expandedColumnsIndexes
 }

@@ -36,38 +36,6 @@ func TestConvertRawInputToImage(t *testing.T) {
 	assert.Equal(t, expectedImage, ConvertRawInputToImage(rawInput))
 }
 
-func TestExpandUniverse(t *testing.T) {
-	image := Image{
-		{s, s, s, G, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, G, s, s},
-		{G, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, G, s, s, s},
-		{s, G, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, G},
-		{s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, G, s, s},
-		{G, s, s, s, G, s, s, s, s, s},
-	}
-
-	expectedImage := Image{
-		{s, s, s, s, G, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, G, s, s, s},
-		{G, s, s, s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, G, s, s, s, s},
-		{s, G, s, s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, s, s, s, G},
-		{s, s, s, s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, s, s, s, s},
-		{s, s, s, s, s, s, s, s, s, G, s, s, s},
-		{G, s, s, s, s, G, s, s, s, s, s, s, s},
-	}
-
-	assert.Equal(t, expectedImage, image.ExpandUniverse())
-}
-
 func TestComputeShortestBetween(t *testing.T) {
 	type testCase struct {
 		start    Coords
@@ -103,5 +71,5 @@ func TestSumShortestPathBetweenAllGalaxies(t *testing.T) {
 		{G, s, s, s, s, G, s, s, s, s, s, s, s},
 	}
 
-	assert.Equal(t, 374, image.SumShortestPathBetweenAllGalaxies())
+	assert.Equal(t, 374, image.SumShortestPathBetweenAllGalaxies(1))
 }
