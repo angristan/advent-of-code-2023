@@ -26,6 +26,16 @@ const (
 
 type Image [][]Pixel
 
+type Coords struct {
+	X int
+	Y int
+}
+
+type Pair struct {
+	Start Coords
+	End   Coords
+}
+
 func ConvertRawInputToImage(rawInput []string) Image {
 	image := make(Image, 0)
 
@@ -40,11 +50,6 @@ func ConvertRawInputToImage(rawInput []string) Image {
 	return image
 }
 
-type Coords struct {
-	X int
-	Y int
-}
-
 func ComputeShortestBetween(start Coords, end Coords) int {
 	deltaX := math.Abs(float64(start.X - end.X))
 	deltaY := math.Abs(float64(start.Y - end.Y))
@@ -52,15 +57,8 @@ func ComputeShortestBetween(start Coords, end Coords) int {
 	return int(deltaX + deltaY)
 }
 
-type Pair struct {
-	Start Coords
-	End   Coords
-}
-
-func (image Image) SumShortestPathBetweenAllGalaxies(expensionFactor int) int {
+func (image Image) GetGalaxies() []Coords {
 	galaxies := []Coords{}
-	expendedRowsIndexes := image.ExpandedRowsIndexes()
-	expendedColumnsIndexes := image.ExpandedColumnsIndexes()
 
 	for y, row := range image {
 		for x, pixel := range row {
@@ -70,6 +68,10 @@ func (image Image) SumShortestPathBetweenAllGalaxies(expensionFactor int) int {
 		}
 	}
 
+	return galaxies
+}
+
+func GetPairsOfGalaxies(galaxies []Coords) []Pair {
 	pairsOfGalaxies := []Pair{}
 
 	for i := 0; i < len(galaxies); i++ {
@@ -77,6 +79,15 @@ func (image Image) SumShortestPathBetweenAllGalaxies(expensionFactor int) int {
 			pairsOfGalaxies = append(pairsOfGalaxies, Pair{galaxies[i], galaxies[j]})
 		}
 	}
+
+	return pairsOfGalaxies
+}
+
+func (image Image) SumShortestPathBetweenAllGalaxies(expensionFactor int) int {
+	galaxies := image.GetGalaxies()
+	expendedRowsIndexes := image.ExpandedRowsIndexes()
+	expendedColumnsIndexes := image.ExpandedColumnsIndexes()
+	pairsOfGalaxies := GetPairsOfGalaxies(galaxies)
 
 	sum := 0
 	for _, pair := range pairsOfGalaxies {
@@ -87,6 +98,7 @@ func (image Image) SumShortestPathBetweenAllGalaxies(expensionFactor int) int {
 		maxX := slices.Max([]int{pair.Start.X, pair.End.X})
 		minX := slices.Min([]int{pair.Start.X, pair.End.X})
 
+		// Take expension into account
 		traversedRows := []int{}
 		for _, rowIndex := range expendedRowsIndexes {
 			if rowIndex >= minY && rowIndex <= maxY {
